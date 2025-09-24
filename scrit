@@ -1,0 +1,39 @@
+
+-- tabla huespedes
+create table huespedes (
+  dni text primary key,
+  nombre_completo text not null,
+  correo_electronico text not null,
+  nacionalidad text,
+  telefono text
+);
+
+-- tabla habitaciones
+create table habitaciones (
+  numero_unico int8 primary key,
+  tipo_habitacion text not null,
+  tarifa_por_noche int8 not null check (tarifa_por_noche > 0),
+  piso int4 not null check (piso > 0),
+  caracteristicas_especiales text
+);
+
+-- tabla servicios_extras
+create table servicios_extras (
+  id_servicio int8 primary key,
+  nombre text not null,
+  costo int8 not null check (costo > 0),
+  descripcion text
+);
+
+-- tabla reservaciones
+create table reservaciones (
+  id_reserva text primary key,
+  dni_huesped text not null references huespedes(dni),
+  numero_habitacion int8 references habitaciones(numero_unico),
+  fecha_entrada date not null,
+  fecha_de_salida date not null,
+  estado_pago text not null check (estado_pago in ('pendiente','pagado','cancelado')),
+  numero_huespedes int4 check (numero_huespedes > 0),
+  fecha_solicitud timestamptz not null default now(),
+  constraint fecha_salida_gt_entrada check (fecha_de_salida > fecha_entrada)
+);
